@@ -1,0 +1,6 @@
+{
+  "name": "Stock Pro",
+  "short_name": "Stock",
+  "start_url": "/login.html",
+  "display": "standalone"
+}
