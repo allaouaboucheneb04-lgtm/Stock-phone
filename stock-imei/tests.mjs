@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+import {isValidImei,extractImeis,inventorySummary,validatePhoneDraft,csvEncode} from './core.mjs';
+const good='490154203237518';
+assert.equal(isValidImei(good),true,'Known valid IMEI');
+assert.equal(isValidImei('490154203237519'),false,'Bad check digit');
+assert.equal(isValidImei('49015420323751'),false,'Too few digits');
+assert.deepEqual(extractImeis(`IMEI: ${good}; Serial: A-123`),[good]);
+assert.deepEqual(extractImeis(`Barcode: 1234567890123`),[]);
+const example={id:'abc',imei:good,imei2:'',brand:'Apple',model:'iPhone 15',status:'stock',purchasePrice:300,listPrice:550};
+const found=validatePhoneDraft(example,[],null);assert.equal(found,'');
+assert.match(validatePhoneDraft(example,[example],null),/existe déjà/);
+assert.equal(validatePhoneDraft({...example,imei2:good},[],null).includes('différents'),true);
+const summ=inventorySummary([example,{...example,id:'sold',status:'sold',salePrice:500,purchasePrice:300},{...example,id:'reserved',status:'reserve',purchasePrice:200,listPrice:400}]);
+assert.equal(summ.stock,1);assert.equal(summ.reserved,1);assert.equal(summ.sold,1);assert.equal(summ.costValue,500);assert.equal(summ.realizedProfit,200);
+assert.equal(csvEncode([['a;b','he said "hi"','x\ny']]),'"a;b";"he said ""hi""";"x\ny"');
+console.log('OK — 13 règles de base vérifiées.');

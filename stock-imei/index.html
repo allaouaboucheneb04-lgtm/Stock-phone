@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="fr-CA">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0c1722">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Stock IMEI">
+  <meta name="description" content="Inventaire de téléphones par IMEI : scanner, entrées, ventes et sauvegardes locales.">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="apple-touch-icon" href="./icons/icon-180.png">
+  <link rel="icon" type="image/png" href="./icons/icon.svg">
+  <link rel="stylesheet" href="./styles.css">
+  <title>Stock IMEI — Gestion de téléphones</title>
+</head>
+<body>
+  <svg xmlns="http://www.w3.org/2000/svg" class="svg-defs" aria-hidden="true">
+    <symbol id="i-package" viewBox="0 0 24 24"><path d="m12 2 9 5-9 5-9-5 9-5ZM3 7v10l9 5 9-5V7M12 12v10M7.5 4.5l9 5"/></symbol>
+    <symbol id="i-scan" viewBox="0 0 24 24"><path d="M4 9V5a1 1 0 0 1 1-1h4m6 0h4a1 1 0 0 1 1 1v4M4 15v4a1 1 0 0 0 1 1h4m6 0h4a1 1 0 0 0 1-1v-4M4 12h16M8 9v6m4-6v6m4-6v6"/></symbol>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V10ZM9 21v-8h6v8"/></symbol>
+    <symbol id="i-history" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8m0-5v5h5m4-1v5l4 2"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><path d="M12 3v3m0 12v3m9-9h-3M6 12H3m15.4-6.4-2.1 2.1M7.7 16.3l-2.1 2.1m12.8 0-2.1-2.1M7.7 7.7 5.6 5.6M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m16 16 5 5"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M4 17v3h16v-3"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 17V4m-5 5 5-5 5 5M4 17v3h16v-3"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m4 12 5 5L20 6"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-7-7 7 7-7 7"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+    <symbol id="i-camera" viewBox="0 0 24 24"><path d="M3 7h4l2-3h6l2 3h4v13H3V7Zm9 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3 2 20h20L12 3Zm0 6v5m0 3v.5"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M10 18h4"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24"><path d="m4 16-1 5 5-1L20 8l-4-4L4 16Zm10-10 4 4"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M10 3h4M6 7l1 14h10l1-14M10 11v6m4-6v6"/></symbol>
+    <symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 6h16M7 12h10m-7 6h4"/></symbol>
+  </svg>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Navigation principale">
+      <div class="brand"><span class="brand-logo"><svg><use href="#i-scan"/></svg></span><span class="brand-name">stock<span>imei</span><small>GESTION INTELLIGENTE</small></span></div>
+      <div class="sidebar-caption">ESPACE DE TRAVAIL</div>
+      <nav class="side-nav">
+        <button type="button" class="nav-item active" data-nav="home"><svg><use href="#i-home"/></svg>Vue d'ensemble</button>
+        <button type="button" class="nav-item" data-nav="inventory"><svg><use href="#i-package"/></svg>Inventaire</button>
+        <button type="button" class="nav-item" data-nav="history"><svg><use href="#i-history"/></svg>Mouvements</button>
+        <button type="button" class="nav-item" data-nav="settings"><svg><use href="#i-settings"/></svg>Paramètres</button>
+      </nav>
+      <div class="sidebar-bottom"><span class="status-dot"></span> Stockage privé sur cet appareil <p>Sans compte • fonctionne hors ligne après installation</p></div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="mobile-brand"><span class="brand-logo mini"><svg><use href="#i-scan"/></svg></span><strong>stock<span>imei</span></strong></div>
+        <div class="breadcrumb" id="breadcrumb">Tableau de bord <span> / </span> Vue d'ensemble</div>
+        <div class="header-actions"><div class="privacy-chip"><span class="status-dot"></span> Enregistré localement</div><button type="button" class="icon-btn top-add" id="top-add" title="Ajouter un téléphone"><svg><use href="#i-plus"/></svg></button></div>
+      </header>
+      <div class="content">
+        <section class="view" id="view-home">
+          <div class="welcome-panel">
+            <div class="welcome-content"><span class="eyebrow light">MON INVENTAIRE</span><h1>Bienvenue dans votre stock<span class="accent-dot">.</span></h1><p>Un téléphone, un IMEI. Gardez le contrôle de chaque appareil, de son arrivée jusqu'à sa vente.</p><div class="welcome-actions"><button class="btn btn-mint" id="home-scan"><svg><use href="#i-scan"/></svg>Scanner un IMEI</button><button class="btn btn-ghost-light" id="home-add"><svg><use href="#i-plus"/></svg>Ajouter manuellement</button></div></div>
+            <div class="welcome-art" aria-hidden="true"><div class="art-ring ring-one"></div><div class="art-ring ring-two"></div><div class="art-phone"><div class="art-cameras"><i></i><i></i></div><div class="art-code"></div><div class="art-bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><small>IMEI • 15 CHIFFRES</small></div></div>
+          </div>
+          <div class="section-label">APERÇU DE VOTRE ACTIVITÉ <span id="today-label"></span></div>
+          <div class="stats-grid">
+            <article class="stat-card"><span class="stat-label">Disponibles <span class="stat-symbol mint">↗</span></span><strong id="stat-stock">0</strong><small>Téléphones en stock</small></article>
+            <article class="stat-card"><span class="stat-label">Réservés <span class="stat-symbol amber">◷</span></span><strong id="stat-reserved">0</strong><small>Mis de côté</small></article>
+            <article class="stat-card"><span class="stat-label">Vendus <span class="stat-symbol blue">✓</span></span><strong id="stat-sold">0</strong><small>Ventes enregistrées</small></article>
+            <article class="stat-card"><span class="stat-label">Valeur du stock <span class="stat-symbol violet">$</span></span><strong id="stat-value">0 $</strong><small>Coût d'achat, réservés inclus</small></article>
+          </div>
+          <div class="home-grid"><div class="panel"><div class="panel-heading"><div><span class="eyebrow">DERNIERS AJOUTS</span><h2>Téléphones récents</h2></div><button type="button" class="link-button" id="see-inventory">Tout voir <svg><use href="#i-arrow"/></svg></button></div><div id="recent-phones" class="recent-list"></div></div>
+            <div class="panel quick-panel"><div class="panel-heading"><div><span class="eyebrow">ACTIONS RAPIDES</span><h2>Gérer mon stock</h2></div></div><button type="button" class="quick-action" id="quick-scan"><span class="quick-icon mint-bg"><svg><use href="#i-scan"/></svg></span><span><strong>Scanner un appareil</strong><small>Ajout ou recherche par IMEI</small></span><svg class="chevron"><use href="#i-chevron"/></svg></button><button type="button" class="quick-action" id="quick-add"><span class="quick-icon lilac-bg"><svg><use href="#i-plus"/></svg></span><span><strong>Ajouter au stock</strong><small>Remplir une nouvelle fiche</small></span><svg class="chevron"><use href="#i-chevron"/></svg></button><button type="button" class="quick-action" id="quick-export"><span class="quick-icon peach-bg"><svg><use href="#i-download"/></svg></span><span><strong>Sauvegarder le stock</strong><small>Télécharger un fichier de sécurité</small></span><svg class="chevron"><use href="#i-chevron"/></svg></button></div>
+          </div>
+        </section>
+
+        <section class="view" id="view-inventory" hidden>
+          <div class="page-heading"><div><span class="eyebrow">CHAQUE IMEI COMPTE</span><h1>Mon inventaire</h1><p>Retrouvez chaque téléphone, son statut et toutes ses informations.</p></div><button class="btn btn-dark" id="inventory-add"><svg><use href="#i-plus"/></svg>Ajouter un téléphone</button></div>
+          <div class="inventory-toolbar"><label class="search-field"><svg><use href="#i-search"/></svg><input id="search-input" type="search" placeholder="Rechercher un IMEI, un modèle, une couleur…" autocomplete="off" aria-label="Rechercher un téléphone"></label><select class="field-select" id="brand-filter" aria-label="Filtrer par marque"><option value="">Toutes les marques</option></select></div>
+          <div class="filter-chips" role="group" aria-label="Filtrer par état"><button class="filter-chip active" data-filter="all">Tous <span id="count-all">0</span></button><button class="filter-chip" data-filter="stock">En stock <span id="count-stock">0</span></button><button class="filter-chip" data-filter="reserve">Réservés <span id="count-reserve">0</span></button><button class="filter-chip" data-filter="sold">Vendus <span id="count-sold">0</span></button></div>
+          <div class="panel inventory-panel"><div class="inventory-count" id="inventory-count">0 téléphone</div><div id="inventory-list" class="inventory-list"></div></div>
+        </section>
+
+        <section class="view" id="view-history" hidden>
+          <div class="page-heading"><div><span class="eyebrow">TRAÇABILITÉ</span><h1>Mouvements</h1><p>Historique des entrées, modifications, réservations et ventes.</p></div></div>
+          <div class="history-toolbar"><select class="field-select" id="event-filter" aria-label="Type de mouvement"><option value="all">Tous les mouvements</option><option value="entree">Entrées</option><option value="vente">Ventes</option><option value="reservation">Réservations</option><option value="retour">Retours au stock</option><option value="modification">Modifications</option><option value="suppression">Suppressions</option></select><label class="search-field"><svg><use href="#i-search"/></svg><input type="search" id="event-search" placeholder="Rechercher IMEI ou modèle" aria-label="Rechercher un mouvement"></label></div>
+          <div class="panel history-panel" id="history-list"></div>
+        </section>
+
+        <section class="view" id="view-settings" hidden>
+          <div class="page-heading"><div><span class="eyebrow">MES DONNÉES</span><h1>Paramètres & sauvegarde</h1><p>Vos données restent sur ce téléphone tant que vous ne les exportez pas.</p></div></div>
+          <div class="settings-grid"><div class="panel settings-panel"><div class="settings-heading"><span class="quick-icon mint-bg"><svg><use href="#i-download"/></svg></span><div><h2>Exporter une sauvegarde</h2><p>Conservez une copie complète : téléphones, IMEI, photos et historique.</p></div></div><button type="button" class="btn btn-dark" id="export-json">Télécharger la sauvegarde (.json)</button><button type="button" class="btn btn-outline" id="export-csv">Exporter l'inventaire (.csv)</button></div>
+          <div class="panel settings-panel"><div class="settings-heading"><span class="quick-icon lilac-bg"><svg><use href="#i-upload"/></svg></span><div><h2>Restaurer une sauvegarde</h2><p>Importer le fichier JSON d'une précédente sauvegarde. Cela remplacera toutes les données actuelles.</p></div></div><button type="button" class="btn btn-outline" id="import-json">Importer un fichier (.json)</button></div></div>
+          <div class="notice"><svg><use href="#i-alert"/></svg><p><strong>Important :</strong> cette version n'utilise pas de compte ni de synchronisation cloud. Une suppression des données Safari ou un changement d'iPhone peut effacer le stock local. Faites régulièrement une sauvegarde JSON.</p></div>
+          <div class="install-guide panel"><span class="eyebrow">INSTALLATION SUR IPHONE</span><h2>Comme une vraie application</h2><p>Ouvrez l'application à son adresse HTTPS dans Safari, touchez <strong>Partager</strong>, puis <strong>Sur l’écran d’accueil</strong> et <strong>Ajouter</strong>. Autorisez l'appareil photo au premier scan.</p></div>
+        </section>
+      </div>
+    </main>
+    <nav class="bottom-nav" aria-label="Navigation iPhone"><button class="bottom-tab active" data-nav="home"><svg><use href="#i-home"/></svg><span>Accueil</span></button><button class="bottom-tab" data-nav="inventory"><svg><use href="#i-package"/></svg><span>Stock</span></button><button class="scan-tab" id="bottom-scan" aria-label="Scanner un IMEI"><svg><use href="#i-scan"/></svg></button><button class="bottom-tab" data-nav="history"><svg><use href="#i-history"/></svg><span>Historique</span></button><button class="bottom-tab" data-nav="settings"><svg><use href="#i-settings"/></svg><span>Réglages</span></button></nav>
+  </div>
+
+  <dialog id="phone-dialog" class="modal modal-form"><div class="modal-head"><div><span class="eyebrow">FICHE INDIVIDUELLE</span><h2 id="phone-dialog-title">Ajouter un téléphone</h2></div><button type="button" class="icon-btn" data-close="phone-dialog" aria-label="Fermer"><svg><use href="#i-close"/></svg></button></div>
+    <form id="phone-form" class="modal-body"><input type="hidden" id="form-id"><label class="form-field"><span>IMEI principal <em>*</em></span><div class="input-with-action"><input id="form-imei" name="imei" inputmode="numeric" autocomplete="off" maxlength="15" placeholder="15 chiffres" required><button type="button" class="inline-scan" id="form-scan" title="Scanner l’IMEI"><svg><use href="#i-scan"/></svg></button></div><small>Un IMEI unique par téléphone, contrôlé automatiquement.</small></label>
+      <label class="form-field"><span>Deuxième IMEI (facultatif)</span><input id="form-imei2" name="imei2" inputmode="numeric" maxlength="15" autocomplete="off" placeholder="IMEI 2"></label>
+      <div class="form-row"><label class="form-field"><span>Marque <em>*</em></span><input id="form-brand" list="brand-options" placeholder="Apple" required><datalist id="brand-options"><option value="Apple"></option><option value="Samsung"></option><option value="Google"></option><option value="Xiaomi"></option><option value="Motorola"></option><option value="OnePlus"></option><option value="Huawei"></option><option value="Autre"></option></datalist></label><label class="form-field"><span>Modèle <em>*</em></span><input id="form-model" placeholder="iPhone 16 Pro" required></label></div>
+      <div class="form-row"><label class="form-field"><span>Capacité</span><input id="form-capacity" placeholder="256 Go"></label><label class="form-field"><span>Couleur</span><input id="form-color" placeholder="Titane naturel"></label></div>
+      <div class="form-row"><label class="form-field"><span>État</span><select id="form-condition"><option value="neuf">Neuf</option><option value="occasion">Occasion</option><option value="reconditionne">Reconditionné</option></select></label><label class="form-field"><span>Numéro de série</span><input id="form-serial" placeholder="S/N (facultatif)"></label></div>
+      <div class="form-row"><label class="form-field"><span>Prix d'achat (CAD)</span><input id="form-cost" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0,00"></label><label class="form-field"><span>Prix de vente affiché</span><input id="form-price" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0,00"></label></div>
+      <div class="form-row"><label class="form-field"><span>Fournisseur</span><input id="form-supplier" placeholder="Nom / entreprise"></label><label class="form-field"><span>Emplacement</span><input id="form-location" placeholder="Vitrine A, tiroir 2…"></label></div>
+      <label class="form-field"><span>Notes</span><textarea id="form-notes" rows="2" placeholder="État de la batterie, accessoires, garantie…"></textarea></label>
+      <label class="photo-field"><input id="form-photo" type="file" accept="image/*"><span class="photo-icon"><svg><use href="#i-camera"/></svg></span><span id="photo-label">Ajouter une photo du téléphone</span><img id="photo-preview" alt="Aperçu de la photo" hidden></label>
+      <p id="form-error" class="error-message" role="alert" hidden></p>
+      <div class="modal-footer"><button type="button" class="btn btn-outline" data-close="phone-dialog">Annuler</button><button type="submit" class="btn btn-dark" id="phone-submit">Enregistrer le téléphone</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="detail-dialog" class="modal detail-modal"><div class="modal-head"><div><span class="eyebrow">FICHE TÉLÉPHONE</span><h2 id="detail-title">Détails du téléphone</h2></div><button type="button" class="icon-btn" data-close="detail-dialog" aria-label="Fermer"><svg><use href="#i-close"/></svg></button></div><div class="modal-body" id="detail-content"></div><div class="modal-footer detail-footer" id="detail-actions"></div></dialog>
+  <dialog id="sale-dialog" class="modal sale-modal"><div class="modal-head"><div><span class="eyebrow">SORTIE DE STOCK</span><h2>Enregistrer une vente</h2></div><button type="button" class="icon-btn" data-close="sale-dialog" aria-label="Fermer"><svg><use href="#i-close"/></svg></button></div><form id="sale-form" class="modal-body"><p id="sale-phone-label" class="sale-intro"></p><label class="form-field"><span>Prix de vente réel (CAD) <em>*</em></span><input type="number" min="0" step="0.01" id="sale-price" required></label><label class="form-field"><span>Référence / client (facultatif)</span><input id="sale-customer" placeholder="Nom ou numéro de facture"></label><p class="error-message" id="sale-error" role="alert" hidden></p><div class="modal-footer"><button type="button" class="btn btn-outline" data-close="sale-dialog">Annuler</button><button class="btn btn-dark" type="submit">Confirmer la vente</button></div></form></dialog>
+  <dialog id="scan-dialog" class="modal scan-modal"><div class="modal-head"><div><span class="eyebrow">SCAN DIRECT</span><h2>Scanner un IMEI</h2></div><button type="button" class="icon-btn" data-close="scan-dialog" aria-label="Fermer"><svg><use href="#i-close"/></svg></button></div><div class="modal-body"><p class="scan-description">Place le code-barres IMEI ou le QR code de la boîte devant l’appareil photo.</p><div id="scanner-viewport" class="scanner-viewport"><span class="scan-placeholder"><svg><use href="#i-scan"/></svg></span></div><div id="scan-message" class="scan-message" aria-live="polite">La caméra demande une autorisation à la première utilisation.</div><div class="scan-actions"><button type="button" class="btn btn-outline" id="scan-retry">Relancer la caméra</button><button type="button" class="btn btn-outline" id="scan-photo"><svg><use href="#i-camera"/></svg>Scanner une photo</button></div><div class="manual-divider"><span>OU SAISIR MANUELLEMENT</span></div><form id="scan-manual-form" class="manual-form"><input id="manual-imei" inputmode="numeric" autocomplete="off" maxlength="15" placeholder="IMEI à 15 chiffres" aria-label="IMEI manuel" required><button class="btn btn-dark" type="submit">Valider</button></form></div></dialog>
+  <input id="scan-image-input" type="file" accept="image/*" hidden>
+  <input id="restore-file-input" type="file" accept="application/json,.json" hidden>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script type="module" src="./app.mjs"></script>
+</body>
+</html>
