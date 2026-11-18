@@ -1,9 +1,10 @@
 import { normalizeImei, isValidImei, extractImeis, money, inventorySummary, csvEncode, validatePhoneDraft } from './core.mjs';
 import { listData, commitChange, restoreData } from './db.mjs';
+import { lookupDeviceByImei } from './tac.mjs';
 
 const $ = selector => document.querySelector(selector);
 const $$ = selector => [...document.querySelectorAll(selector)];
-const state = { phones: [], events: [], view: 'home', filter: 'all', query: '', brand: '', eventFilter: 'all', eventQuery: '', photo: '', editingId: null, detailId: null, saleId: null, scanner: null, scanning: false, scanningStart: false, scanOrigin: 'general', scanLocked: false, toastTimer: null };
+const state = { phones: [], events: [], view: 'home', filter: 'all', query: '', brand: '', eventFilter: 'all', eventQuery: '', photo: '', editingId: null, detailId: null, saleId: null, scanner: null, scanning: false, scanningStart: false, scanOrigin: 'general', scanLocked: false, lookupSeq: 0, toastTimer: null };
 
 function esc(input = '') { return String(input ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function dateText(raw) { if (!raw) return '—'; const d = new Date(raw); return Number.isNaN(d.valueOf()) ? '—' : new Intl.DateTimeFormat('fr-CA', { dateStyle:'medium', timeStyle:'short' }).format(d); }
@@ -62,18 +63,45 @@ function setView(name) {
 }
 function formValue(id) { return $(`#form-${id}`).value.trim(); }
 function clearFormError() { $('#form-error').hidden=true; }
+
+async function identifyByImei(value) {
+  const imei = normalizeImei(value);
+  const ticket = ++state.lookupSeq;
+  const status = $('#tac-lookup-status');
+  if (!isValidImei(imei) || !$('#phone-dialog').open) { status.hidden = true; return; }
+  status.hidden = false;
+  status.textContent = 'Identification du téléphone… La première recherche télécharge la base TAC.';
+  try {
+    const device = await lookupDeviceByImei(imei);
+    if (ticket !== state.lookupSeq || !$('#phone-dialog').open || normalizeImei(formValue('imei')) !== imei) return;
+    if (!device) {
+      status.textContent = 'Aucune correspondance trouvée. Renseigne la marque et le modèle manuellement.';
+      return;
+    }
+    if (!formValue('brand')) $('#form-brand').value = device.brand;
+    if (!formValue('model')) $('#form-model').value = device.model;
+    status.textContent = 'Suggestion : ' + device.brand + ' ' + device.model + ' (TAC ' + device.tac + '). Vérifie le modèle sur la boîte avant d’enregistrer.';
+  } catch {
+    if (ticket !== state.lookupSeq || !$('#phone-dialog').open) return;
+    status.textContent = 'Recherche automatique indisponible. Vérifie Internet ou saisis les informations manuellement.';
+  }
+}
+
 function openCreate(imei='', imei2='') {
-  state.editingId=null; state.photo='';
+  state.editingId=null; state.photo=''; state.lookupSeq++;
+  $('#tac-lookup-status').hidden=true;
   $('#phone-form').reset();$('#form-id').value='';
   $('#phone-dialog-title').textContent='Ajouter un téléphone';$('#phone-submit').textContent='Enregistrer le téléphone';
   $('#form-imei').readOnly=false;
   $('#form-imei').value=imei;$('#form-imei2').value=imei2;
   $('#photo-preview').hidden=true;$('#photo-label').textContent='Ajouter une photo du téléphone';
   clearFormError(); dialogOpen('phone-dialog');
-  if (!imei) setTimeout(()=>$('#form-imei').focus(),50);
+  if (imei) void identifyByImei(imei);
+  else setTimeout(()=>$('#form-imei').focus(),50);
 }
 function openEdit(phone) {
-  state.editingId=phone.id;state.photo=phone.photo||'';
+  state.editingId=phone.id;state.photo=phone.photo||'';state.lookupSeq++;
+  $('#tac-lookup-status').hidden=true;
   $('#phone-form').reset();
   for(const [id,key] of Object.entries({imei:'imei',imei2:'imei2',brand:'brand',model:'model',capacity:'capacity',color:'color',condition:'condition',serial:'serial',cost:'purchasePrice',price:'listPrice',supplier:'supplier',location:'location',notes:'notes'})) $(`#form-${id}`).value=phone[key]??'';
   $('#form-id').value=phone.id;
@@ -254,6 +282,7 @@ function resolveScan(imei,imei2='') {
   if(!isValidImei(imei)){scanStatus('IMEI invalide. Vérifie les 15 chiffres.',true);showToast('IMEI invalide. Vérifie les 15 chiffres.',true);return;}
   if(state.scanOrigin==='form') {
     $('#form-imei').value=imei;if(imei2)$('#form-imei2').value=imei2;
+    void identifyByImei(imei);
     showToast('IMEI ajouté dans la fiche.');return;
   }
   const scanned=[imei,imei2].filter(Boolean);
@@ -289,6 +318,11 @@ function wire() {
   $('#phone-form').addEventListener('submit',saveForm);
   $('#sale-form').addEventListener('submit',saveSale);
   $('#form-scan').addEventListener('click',()=>openScanner('form'));
+  $('#form-imei').addEventListener('input',e=>{
+    const imei=normalizeImei(e.target.value);
+    if (isValidImei(imei)) void identifyByImei(imei);
+    else {state.lookupSeq++;$('#tac-lookup-status').hidden=true;}
+  });
   $('#scan-retry').addEventListener('click',async()=>{await stopScanner();await startScanner();});
   $('#scan-photo').addEventListener('click',()=>$('#scan-image-input').click());
   $('#scan-image-input').addEventListener('change',e=>scanImage(e.target.files?.[0]));
